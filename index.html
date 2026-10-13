@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Demande réservation salle des fêtes</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#eef2f6;
+  margin:30px;
+}
+
+.container{
+  background:white;
+  padding:25px;
+  max-width:700px;
+  margin:auto;
+  border-radius:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+  border:1px solid #ccc;
+  border-radius:5px;
+  box-sizing:border-box;
+}
+
+textarea{
+  min-height:120px;
+}
+
+button{
+  background:#2e7d32;
+  color:white;
+  border:none;
+  padding:12px;
+  border-radius:5px;
+  width:100%;
+  font-size:16px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#256628;
+}
+
+.info{
+  font-size:13px;
+  color:#555;
+  margin-top:15px;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Demande de réservation<br>Salle des fêtes</h2>
+
+<input type="text" id="nom" placeholder="Nom et prénom">
+<input type="text" id="adresse" placeholder="Adresse">
+<input type="tel" id="telephone" placeholder="Téléphone">
+<input type="email" id="email" placeholder="Email">
+
+<label>Type</label>
+
+<label>Commune</label>
+<select id="commune">
+  <option>Habitant de La Tuilière</option>
+  <option>Extérieur</option>
+</select>
+
+<select id="type">
+  <option>Particulier</option>
+  <option>Association</option>
+</select>
+
+<label>Association</label>
+<select id="association">
+  <option value="">-- Sélectionner --</option>
+  <option>Néant</option>
+  <option>ACCA (Société de chasse)</option>
+  <option>Anciens combattants</option>
+  <option>Association des parents d'élèves</option>
+  <option>Centenaire</option>
+  <option>Club des aînés</option>
+  <option>Club de foot</option>
+  <option>Comité des fêtes</option>
+  <option>Coup du milieu</option>
+  <option>CUMA (coopérative d'utilisation de matériel agricole)</option>
+  <option>Eclat (Marche)</option>
+  <option>Les classes</option>
+  <option>Mathis pour la vie</option>
+  <option>Vivre en territoire d’avenir</option>
+  <option>Autre</option>
+</select>
+
+<input type="number" id="personnes" placeholder="Nombre de personnes">
+
+<label>Manifestation</label>
+<select id="manifestation">
+  <option>Bal populaire</option>
+  <option>Repas</option>
+  <option>Repas dansant</option>
+  <option>Soirée dansante</option>
+  <option>Fête patronale</option>
+  <option>Vin d’honneur</option>
+  <option>Cousinade</option>
+  <option>Fête des classes</option>
+  <option>Mariage</option>
+  <option>Enterrement</option>
+  <option>Marche</option>
+  <option>Anniversaire</option>
+  <option>Baptême</option>
+  <option>Marché artisanal</option>
+  <option>Concours de belote</option>
+  <option>Concours de pétanque</option>
+  <option>Loto</option>
+  <option>Spectacle d’école</option>
+  <option>Arbre de Noël</option>
+  <option>Réunion</option>
+  <option>Réunion publique</option>
+  <option>Réunion intercommunale</option>
+  <option>Cérémonie des vœux du maire</option>
+  <option>Autre</option>
+</select>
+
+<label>Salle souhaitée</label>
+<select id="salle">
+  <option value="Salle du bas">Salle du bas</option>
+  <option value="Salle du haut">Salle du haut</option>
+</select>
+
+<label>Date de l'événement</label>
+<input type="date" id="date_evenement">
+
+<label>Date début</label>
+<input type="date" id="debut">
+
+<label>Date fin</label>
+<input type="date" id="fin">
+
+<label>Chauffage</label>
+<select id="chauffage">
+  <option value="0">Non</option>
+  <option value="40">Oui (+40€)</option>
+</select>
+
+<label>Sono</label>
+<select id="sono">
+  <option value="0">Non</option>
+  <option value="40">Oui (+40€)</option>
+</select>
+
+<textarea id="obs" placeholder="Message ou informations complémentaires"></textarea>
+
+<button onclick="envoyer()">📩 Envoyer la demande</button>
+
+<p class="info">
+Votre demande sera étudiée par la mairie.<br>
+La réservation ne sera définitive qu'après validation.
+</p>
+
+</div>
+
+<script>
+
+function envoyer() {
+
+  const bouton = document.querySelector("button");
+
+  // Évite plusieurs clics
+  bouton.disabled = true;
+  bouton.innerText = "⏳ Envoi de votre demande...";
+
+  const data = {
+
+    nom: document.getElementById("nom").value,
+    adresse: document.getElementById("adresse").value,
+    telephone: document.getElementById("telephone").value,
+    email: document.getElementById("email").value,
+
+    commune: document.getElementById("commune").value,
+    type: document.getElementById("type").value,
+    association: document.getElementById("association").value,
+    personnes: document.getElementById("personnes").value,
+    manifestation: document.getElementById("manifestation").value,
+
+    salle: document.getElementById("salle").value,
+
+    date_evenement: document.getElementById("date_evenement").value,
+
+    // Dates utilisées pour le contrôle de disponibilité
+    debut: document.getElementById("debut").value,
+    fin: document.getElementById("fin").value,
+
+    // Dates enregistrées dans la demande
+    date_debut: document.getElementById("debut").value,
+    date_fin: document.getElementById("fin").value,
+
+    chauffage: document.getElementById("chauffage").value,
+    sono: document.getElementById("sono").value,
+
+    obs: document.getElementById("obs").value
+  };
+
+
+  fetch("https://script.google.com/macros/s/AKfycby1pcyOGd1vVzcwmTySTcSEaUYoxGqyQTZU5HTm7A4fPLltgvQXynU6fPkXjXJBPKIf5Q/exec", {
+
+    method: "POST",
+
+    body: new URLSearchParams(data)
+
+  })
+
+  .then(function(response) {
+    return response.text();
+  })
+
+  .then(function(rep) {
+
+    rep = rep.trim();
+
+    // ✅ Demande enregistrée
+    if (rep === "OK") {
+
+      bouton.innerText = "✅ Demande envoyée";
+
+      alert(
+        "✅ Votre demande a bien été prise en compte.\n\n" +
+        "Un email de confirmation va vous être envoyé."
+      );
+
+      return;
+    }
+
+
+    // 🔴 Salle indisponible
+    if (rep === "INDISPONIBLE") {
+
+      bouton.disabled = false;
+      bouton.innerText = "📩 Envoyer la demande";
+
+      alert(
+        "🔴 Cette salle est déjà demandée pour cette période.\n\n" +
+        "Veuillez choisir une autre date ou une autre salle."
+      );
+
+      return;
+    }
+
+
+    // ⚠️ Réponse inattendue
+    console.log("Réponse du serveur :", rep);
+
+    bouton.disabled = false;
+    bouton.innerText = "📩 Envoyer la demande";
+
+    alert(
+      "⚠️ Une réponse inattendue a été reçue du serveur.\n\n" +
+      "Ne renvoyez pas immédiatement votre demande : vérifiez d'abord votre email."
+    );
+
+  })
+
+  .catch(function(err) {
+
+    console.error("Erreur :", err);
+
+    bouton.disabled = false;
+    bouton.innerText = "📩 Envoyer la demande";
+
+    alert(
+      "⚠️ La communication avec le serveur a rencontré un problème.\n\n" +
+      "Si vous avez reçu un email de confirmation, ne renvoyez pas votre demande."
+    );
+
+  });
+
+}
+
+</script>
+
+</body>
+</html>
