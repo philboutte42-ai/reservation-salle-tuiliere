@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Calendrier salle des fêtes</title>
+
+<style>
+body{font-family:Arial;background:#eef2f6;margin:30px}
+
+.container{background:white;padding:25px;max-width:950px;margin:auto;border-radius:10px;border: 2px solid black;}
+
+.entete{display:flex;justify-content:space-between;margin-bottom:20px}
+
+button{background:#2e7d32;color:white;border:none;padding:8px;border-radius:5px}
+
+#jours{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+
+.case{
+  height:70px;
+  display:flex;
+  flex-direction:column;   /* 🔥 IMPORTANT */
+  align-items:center;
+  justify-content:center;
+  border-radius:6px;
+}
+.dispo{background:#e8f5e9}
+.weekend{background:#e3f2fd}
+
+/* 🔴 bas */
+.case.bas{background:#e53935;color:white}
+
+/* 🔵 haut */
+.case.haut{background:#1e88e5;color:white}
+
+
+/* 🟣 les deux */
+.case.mix{background:purple;color:white}
+/* ===== AJOUTS ===== */
+
+/* effet au survol */
+.case:hover{
+  transform:scale(1.05);
+  cursor:pointer;
+}
+
+/* centrer le titre */
+h2{
+  text-align:center;
+}
+/* ===== JOURS DE LA SEMAINE ===== */
+
+#semaine{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+  margin-bottom:5px;
+  font-weight:bold;
+  text-align:center;
+}
+
+#semaine div{
+  background:#ddd;
+  padding:5px;
+  border-radius:5px;
+}
+
+#semaine div:nth-child(6),
+#semaine div:nth-child(7){
+  background:#cfd8dc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div style="text-align:center;margin-bottom:30px;">
+  <img src="logo.jpg.jpg" style="height:110px;">
+</div>
+
+<h2>Calendrier salle des fêtes de La Tuilière</h2>
+
+}
+
+<div style="margin-bottom:15px;">
+  <span style="background:#e53935;color:white;padding:5px;">Salle du bas</span>
+  <span style="background:#1e88e5;color:white;padding:5px;margin-left:10px;">Salle du haut</span>
+</div>
+
+<div class="entete">
+<button onclick="moisPrecedent()">◀</button>
+<h3 id="titre"></h3>
+<button onclick="moisSuivant()">▶</button>
+</div>
+<div id="semaine">
+  <div>Lun</div>
+  <div>Mar</div>
+  <div>Mer</div>
+  <div>Jeu</div>
+  <div>Ven</div>
+  <div>Sam</div>
+  <div>Dim</div>
+</div>
+
+<div id="jours"></div>
+
+</div>
+
+<script>
+
+let reservations = [];
+let dateActuelle = new Date();
+
+const mois = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+
+function dateTexte(a,m,j){
+  m=("0"+(m+1)).slice(-2);
+  j=("0"+j).slice(-2);
+  return a+"-"+m+"-"+j;
+}
+
+function afficherCalendrier(){
+
+  let cont=document.getElementById("jours");
+  cont.innerHTML="";
+
+  let a=dateActuelle.getFullYear();
+  let m=dateActuelle.getMonth();
+
+  document.getElementById("titre").innerHTML=mois[m]+" "+a;
+
+  let premier=new Date(a,m,1).getDay();
+  if(premier===0) premier=7;
+
+  let nb=new Date(a,m+1,0).getDate();
+
+  for(let i=1;i<premier;i++){
+    cont.appendChild(document.createElement("div"));
+  }
+
+  for(let j=1;j<=nb;j++){
+
+    let dateStr = dateTexte(a,m,j);
+    let div = document.createElement("div");
+
+    div.className="case dispo";
+
+    let jour=new Date(a,m,j).getDay();
+    if(jour===6 || jour===0){
+      div.classList.add("weekend");
+    }
+
+    div.innerHTML = j;
+let bas = false;
+let haut = false;
+
+for(let i=0;i<reservations.length;i++){
+
+  let r = reservations[i];
+
+  let dDebut = new Date(r.debut);
+  let dFin = new Date(r.fin);
+
+  // correction si dates inversées
+  if(dDebut > dFin){
+    let temp = dDebut;
+    dDebut = dFin;
+    dFin = temp;
+  }
+
+  let dJour = new Date(dateStr);
+
+  if(dJour >= dDebut && dJour <= dFin){
+
+    let salle = (r.salle || "").toLowerCase();
+
+    if(salle.includes("bas")) bas = true;
+    if(salle.includes("haut")) haut = true;
+  }
+}
+
+// 🎨 appliquer couleur
+if(bas && haut){
+  div.className = "case mix";
+}
+else if(bas){
+  div.className = "case bas";
+}
+else if(haut){
+  div.className = "case haut";
+}   if(bas && haut){
+      div.className="case mix";
+    }
+    else if(bas){
+      div.className="case bas";
+    }
+    else if(haut){
+      div.className="case haut";
+    }
+if(bas || haut){
+  div.innerHTML = j + "<br><small>Réservé</small>";
+}
+
+    cont.appendChild(div);
+  }
+}
+
+function moisSuivant(){
+  dateActuelle.setMonth(dateActuelle.getMonth()+1);
+  afficherCalendrier();
+}
+
+function moisPrecedent(){
+  dateActuelle.setMonth(dateActuelle.getMonth()-1);
+  afficherCalendrier();
+}
+
+function chargerReservations(){
+
+  fetch("https://script.google.com/macros/s/AKfycbx8L8LpaLAkAQsQ4Mtub71-HhTbaTYX7BSABGlNoum1X8qoegZYHr1nIiRx_4i7NqQ7Jg/exec")
+  .then(res => res.json())
+  .then(data => {
+
+    reservations = data.map(r => ({
+      debut: r.debut,
+      fin: r.fin,
+      salle: r.salle
+    }));
+
+    afficherCalendrier();
+  })
+  .catch(err => {
+    console.error(err);
+    afficherCalendrier();
+  });
+
+}
+
+afficherCalendrier();
+chargerReservations();
+
+</script>
+
+</body>
+</html>
